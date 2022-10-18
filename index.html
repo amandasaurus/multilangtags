@@ -1,0 +1,151 @@
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<link rel=stylesheet href="style.css" />
+	<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <script defer src="./alpinejs-3.10.0.js"></script>
+    <script defer src="./alpinejs-persist-v3.10.4.min.js"></script>
+	<script defer>
+		function flag_for_code(code) {
+			if (code.length == 0) {
+				return undefined;
+			} else {
+				let output = "";
+				for (let c of code) {
+					output += String.fromCodePoint(c.toLowerCase().codePointAt(0) - 0x61 + 0x1F1E6);
+				}
+				return output;
+			}
+		}
+		function superscript_for_code(code) {
+			if (code.length == 0) {
+				return undefined;
+			} else {
+				var letter_map = {
+					"a": "ᵃ", "b": "ᵇ", "c": "ᶜ", "d": "ᵈ",
+					"e": "ᵉ", "f": "ᶠ", "g": "ᵍ", "h": "ʰ",
+					"i": "ᶦ", "j": "ʲ", "k": "ᵏ", "l": "ˡ",
+					"m": "ᵐ", "n": "ⁿ", "o": "ᵒ", "p": "ᵖ",
+					"q": "ᑫ", "r": "ʳ", "s": "ˢ", "t": "ᵗ",
+					"u": "ᵘ", "v": "ᵛ", "w": "ʷ", "x": "ˣ",
+					"y": "ʸ", "z": "ᶻ",
+				};
+				let output = "";
+				for (let c of code) {
+					output += letter_map[c.toLowerCase()] ?? ''; // .codePointAt(0) - 0x61 + 0x1F1E6);
+				}
+				return output;
+			}
+		}
+
+		function format_text(text) {
+			let output = ""
+			if (text.lang_marker == 'flag' && text['lang1']['flag'].length > 0) {
+				output += flag_for_code(text.lang1.flag)
+			}
+			if (text.lang_marker == 'superscript' && text['lang1']['code'].length > 0) {
+				output += superscript_for_code(text.lang1.code)
+			}
+			output += " ";
+			if (text.incl_rfc2482_tags && text['lang1']['code'].length > 0) {
+				output += "\u{E0001}";
+				for (let c of text['lang1']['code']) {
+					output += String.fromCodePoint(c.toLowerCase().codePointAt(0) - 0x60 + 0xE0040);
+				}
+			}
+
+			output += text['lang1']['text'];
+
+			if (text.incl_rfc2482_tags && text['lang1']['code'].length > 0) {
+				output += "\u{E007F}";
+			}
+
+			output += "\n\n";
+
+			if (text.lang_marker == 'flag' && text['lang2']['flag'].length > 0) {
+				output += flag_for_code(text.lang2.flag)
+			}
+			if (text.lang_marker == 'superscript' && text['lang2']['code'].length > 0) {
+				output += superscript_for_code(text.lang2.code)
+			}
+			output += " ";
+			if (text.incl_rfc2482_tags && text['lang2']['flag'].length > 0) {
+				output += "\u{E0001}";
+				for (let c of text['lang2']['code']) {
+					output += String.fromCodePoint(c.toLowerCase().codePointAt(0) - 0x60 + 0xE0040);
+				}
+			}
+
+			output += text['lang2']['text'];
+
+			if (text.incl_rfc2482_tags && text['lang2']['flag'].length > 0) {
+				output += "\u{E007F}";
+			}
+
+			if (text.suffix.length > 0) {
+				output += "\n\n";
+				output += text.suffix;
+			}
+
+			return output;
+		}
+	</script>
+</head>
+<body>
+	<main x-data="{
+	  text: {
+	  	lang_marker: 'flag',
+		lang1: { 'code': '', 'flag': '', 'text': '' },
+		lang2: { 'code': '', 'flag': '', 'text': '' },
+		suffix: '',
+		incl_rfc2482_tags: true,
+		flip() {
+			var old = this.lang1;
+			this.lang1 = this.lang2;
+			this.lang2 = old;
+		},
+		random_flip() {
+			if (Math.random() > 0.5) {
+				this.flip();
+			}
+		},
+		reset_texts() {
+			this.lang1.text = '';
+			this.lang2.text = '';
+			this.suffix = '';
+		},
+
+	  }
+	 }">
+		<p>Multilinguagal text formatter</p>
+		<div>
+			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 />
+			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 />
+			<input id=lang1_text size=50 type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2 />
+		</div>
+		<button title="flip order" @click="text.flip()">⤱</button>
+		<button title="flip order" @click="text.random_flip()">🎲</button>
+		<div>
+			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 />
+			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 />
+			<input id=lang2_text size=50 type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2 />
+		</div>
+		<div><label>Suffix: <input type=text x-model="text.suffix"/></label></div>
+		<label><input type=checkbox x-model="text.incl_rfc2482_tags"> incl rfc2482 lang. bytes</label>
+		<div>Language Markup:
+				<label><input type=radio x-model="text.lang_marker" value=flag /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
+				<label><input type=radio x-model="text.lang_marker" value=superscript /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
+		<div>
+			<button id="copy_to_clipboard" :title="navigator.clipboard == undefined ? 'Clipboard not available.\nAre you accessing via HTTP?' : 'Copy to Clipboard'" :disabled="navigator.clipboard == undefined" @click="navigator.clipboard.writeText(format_text(text));">copy</button>
+			<button title="clear the texts" :disabled="text.lang1.text == '' && text.lang2.text == '' && text.suffixthis.suffix = '';" @click="text.reset_texts();">clear</button>
+			<span  x-text="`Total length: ${format_text(text).length} chars`"></span>
+		</div>
+		<textarea readonly x-text="format_text(text)" cols=80 rows=6></textarea>
+		<details style="margin-top: 20ch" open><summary>Inner:</summary>
+			<pre style="white-space: pre-wrap; max-width: 80ch;" x-text="JSON.stringify(text, null, ' ')"></pre>
+			<button @click="text.reset_texts();">Reset</button>
+		</details>
+	</main>
+</body>
+</html>
