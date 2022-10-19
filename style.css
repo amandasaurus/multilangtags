@@ -13,4 +13,14 @@ main {
 	max-width: 80ch;
 	min-width: 35ch;
 	margin-top: 1ch;
+
+	display: flex;
+	flex-direction: column;
+
+	gap: 1ch;
+}
+
+.flex_row {
+	display: flex;
+	flex-direction: row;
 }

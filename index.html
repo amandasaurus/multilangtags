@@ -118,34 +118,75 @@
 
 	  }
 	 }">
-		<p>Multilinguagal text formatter</p>
+		<div>
+			<h1>MultiLang Tags</h1>
+		</div>
 		<div>
 			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 />
 			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 />
 			<input id=lang1_text size=50 type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2 />
 		</div>
-		<button title="flip order" @click="text.flip()">⤱</button>
-		<button title="flip order" @click="text.random_flip()">🎲</button>
+		<div class="flex_row" style="margin: 1ch 0; justify-content: center; gap: 1ch;">
+			<button style="width: 5ch" title="flip order" @click="text.flip()">
+				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-switch-vertical" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					<polyline points="3 8 7 4 11 8"></polyline>
+					<line x1="7" y1="4" x2="7" y2="13"></line>
+					<polyline points="13 16 17 20 21 16"></polyline>
+					<line x1="17" y1="10" x2="17" y2="20"></line>
+				</svg> </button>
+				<button style="width: 5ch;" title="flip order" @click="text.random_flip()">🎲</button>
+		</div>
 		<div>
 			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 />
 			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 />
 			<input id=lang2_text size=50 type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2 />
 		</div>
+
 		<div><label>Suffix: <input type=text x-model="text.suffix"/></label></div>
-		<label><input type=checkbox x-model="text.incl_rfc2482_tags"> incl rfc2482 lang. bytes</label>
-		<div>Language Markup:
-				<label><input type=radio x-model="text.lang_marker" value=flag /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
-				<label><input type=radio x-model="text.lang_marker" value=superscript /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
+
 		<div>
-			<button id="copy_to_clipboard" :title="navigator.clipboard == undefined ? 'Clipboard not available.\nAre you accessing via HTTP?' : 'Copy to Clipboard'" :disabled="navigator.clipboard == undefined" @click="navigator.clipboard.writeText(format_text(text));">copy</button>
-			<button title="clear the texts" :disabled="text.lang1.text == '' && text.lang2.text == '' && text.suffixthis.suffix = '';" @click="text.reset_texts();">clear</button>
-			<span  x-text="`Total length: ${format_text(text).length} chars`"></span>
+			<label><input type=checkbox x-model="text.incl_rfc2482_tags">rfc2482 lang. bytes</label>
 		</div>
-		<textarea readonly x-text="format_text(text)" cols=80 rows=6></textarea>
-		<details style="margin-top: 20ch" open><summary>Inner:</summary>
-			<pre style="white-space: pre-wrap; max-width: 80ch;" x-text="JSON.stringify(text, null, ' ')"></pre>
-			<button @click="text.reset_texts();">Reset</button>
-		</details>
+
+		<div>
+			<span>Language Markup:</span>
+			<span>
+				<label><input type=radio x-model="text.lang_marker" value=flag /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
+			</span>
+			<span>
+				<label><input type=radio x-model="text.lang_marker" value=superscript /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
+			</span>
+		</div>
+		<div class="flex_row" style="justify-content: center; gap: 0.8ch">
+			<button
+				id="copy_to_clipboard"
+				:title="navigator.clipboard == undefined ? 'Clipboard not available.\nAre you accessing via HTTP?' : 'Copy to Clipboard'"
+				:disabled="navigator.clipboard == undefined"
+				@click="navigator.clipboard.writeText(format_text(text));">
+					<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					   <rect x="8" y="8" width="12" height="12" rx="2"></rect>
+					   <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2"></path>
+					</svg>
+			</button>
+			<button
+				title="clear the texts"
+				:disabled="text.lang1.text == '' && text.lang2.text == '' && this.suffix == ''"
+				@click="text.reset_texts();">
+				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+				   <line x1="18" y1="6" x2="6" y2="18"></line>
+				   <line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
+		</div>
+		<div style="padding: 0 2ch;">
+			<span x-text="`Total length: ${format_text(text).length} chars`"></span>
+		</div>
+		<div>
+			<textarea readonly x-text="format_text(text)" cols=80 rows=6></textarea>
+		</div>
 	</main>
 </body>
 </html>
