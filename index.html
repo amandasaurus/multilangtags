@@ -41,10 +41,10 @@
 
 		function format_text(text) {
 			let output = ""
-			if (text.lang_marker == 'flag' && text['lang1']['flag'].length > 0) {
+			if (text.incl_flag && text['lang1']['code'].length > 0) {
 				output += flag_for_code(text.lang1.flag)
 			}
-			if (text.lang_marker == 'superscript' && text['lang1']['code'].length > 0) {
+			if (text.incl_superscript && text['lang1']['code'].length > 0) {
 				output += superscript_for_code(text.lang1.code)
 			}
 			output += " ";
@@ -100,6 +100,8 @@
 		lang2: { 'code': '', 'flag': '', 'text': '' },
 		suffix: '',
 		incl_rfc2482_tags: true,
+		incl_superscript: false,
+		incl_flag: true,
 		flip() {
 			var old = this.lang1;
 			this.lang1 = this.lang2;
@@ -118,16 +120,14 @@
 
 	  }
 	 }">
-		<div>
-			<h1>MultiLang Tags</h1>
+		<h1>MultiLang Tags</h1>
+		<div class="lang_input">
+			<input class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 />
+			<input class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 />
+			<textarea class="text" id=lang1_text type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2></textarea>
 		</div>
-		<div>
-			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 />
-			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 />
-			<input id=lang1_text size=50 type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2 />
-		</div>
-		<div class="flex_row" style="margin: 1ch 0; justify-content: center; gap: 1ch;">
-			<button style="width: 5ch" title="flip order" @click="text.flip()">
+		<div class="flex_row" style="margin: 0.1ch 0; justify-content: center; ">
+			<button style="width: 5ch; max-height: 5ch; aspect-ratio: 1" title="flip order" @click="text.flip()">
 				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-switch-vertical" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
 					<polyline points="3 8 7 4 11 8"></polyline>
@@ -135,29 +135,27 @@
 					<polyline points="13 16 17 20 21 16"></polyline>
 					<line x1="17" y1="10" x2="17" y2="20"></line>
 				</svg> </button>
-				<button style="width: 5ch;" title="flip order" @click="text.random_flip()">🎲</button>
+				<!--
+				<button style="width: 5ch;" title="flip order" @click="text.random_flip()">
+					<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrows-shuffle" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					   <path d="M18 4l3 3l-3 3"></path>
+					   <path d="M18 20l3 -3l-3 -3"></path>
+					   <path d="M3 7h3a5 5 0 0 1 5 5a5 5 0 0 0 5 5h5"></path>
+					   <path d="M21 7h-5a4.978 4.978 0 0 0 -2.998 .998m-4.002 8.003a4.984 4.984 0 0 1 -3 .999h-3"></path>
+					</svg>
+				</button>
+				-->
 		</div>
-		<div>
-			<input type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 />
-			<input type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 />
-			<input id=lang2_text size=50 type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2 />
+		<div class="lang_input">
+			<input class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 />
+			<input class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 />
+			<textarea class="text" id=lang2_text type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2></textarea>
 		</div>
 
 		<div><label>Suffix: <input type=text x-model="text.suffix"/></label></div>
 
-		<div>
-			<label><input type=checkbox x-model="text.incl_rfc2482_tags">rfc2482 lang. bytes</label>
-		</div>
 
-		<div>
-			<span>Language Markup:</span>
-			<span>
-				<label><input type=radio x-model="text.lang_marker" value=flag /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
-			</span>
-			<span>
-				<label><input type=radio x-model="text.lang_marker" value=superscript /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
-			</span>
-		</div>
 		<div class="flex_row" style="justify-content: center; gap: 0.8ch">
 			<button
 				id="copy_to_clipboard"
@@ -174,10 +172,10 @@
 				title="clear the texts"
 				:disabled="text.lang1.text == '' && text.lang2.text == '' && this.suffix == ''"
 				@click="text.reset_texts();">
-				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+				<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eraser" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 				   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-				   <line x1="18" y1="6" x2="6" y2="18"></line>
-				   <line x1="6" y1="6" x2="18" y2="18"></line>
+				   <path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3"></path>
+				   <path d="M18 13.3l-6.3 -6.3"></path>
 				</svg>
 			</button>
 		</div>
@@ -185,7 +183,14 @@
 			<span x-text="`Total length: ${format_text(text).length} chars`"></span>
 		</div>
 		<div>
-			<textarea readonly x-text="format_text(text)" cols=80 rows=6></textarea>
+			<textarea style="height: 10ch;" readonly x-text="format_text(text)"></textarea>
+		</div>
+
+		<div class="flex-vert">
+			<h2>Options</h2>
+			<label><input type=checkbox x-model="text.incl_rfc2482_tags">  rfc2482 lang. bytes</label>
+			<label><input type=checkbox x-model="text.incl_flag" /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
+			<label><input type=checkbox x-model="text.incl_superscript" /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
 		</div>
 	</main>
 </body>
