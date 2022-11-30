@@ -122,9 +122,9 @@
 	 }">
 		<h1>MultiLang Tags</h1>
 		<div class="lang_input">
-			<input class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 />
-			<input class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 />
-			<textarea class="text" id=lang1_text type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2></textarea>
+			<input id=lang1_code class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 @keydown.enter="document.getElementById('lang1_flag').focus()" />
+			<input id=lang1_flag class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 @keydown.enter="document.getElementById('lang1_text').focus()" />
+			<textarea id=lang1_text class="text" type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2></textarea>
 		</div>
 		<div class="flex_row" style="margin: 0.1ch 0; justify-content: center; ">
 			<button style="width: 5ch; max-height: 5ch; aspect-ratio: 1" title="flip order" @click="text.flip()">
@@ -148,8 +148,8 @@
 				-->
 		</div>
 		<div class="lang_input">
-			<input class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 />
-			<input class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 />
+			<input id=lang2_code class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 @keydown.enter="document.getElementById('lang2_flag').focus()" />
+			<input id=lang2_flag class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 @keydown.enter="document.getElementById('lang2_text').focus()" />
 			<textarea class="text" id=lang2_text type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2></textarea>
 		</div>
 
