@@ -41,13 +41,15 @@
 
 		function format_text(text) {
 			let output = ""
-			if (text.incl_flag && text['lang1']['code'].length > 0) {
+			if (text.incl_flag && text['lang1']['flag'].length > 0) {
 				output += flag_for_code(text.lang1.flag)
 			}
 			if (text.incl_superscript && text['lang1']['code'].length > 0) {
 				output += superscript_for_code(text.lang1.code)
 			}
-			output += " ";
+			if ( text.incl_flag || text.incl_superscript ) {
+				output += " ";
+			}
 			if (text.incl_rfc2482_tags && text['lang1']['code'].length > 0) {
 				output += "\u{E0001}";
 				for (let c of text['lang1']['code']) {
@@ -63,13 +65,15 @@
 
 			output += "\n\n";
 
-			if (text.lang_marker == 'flag' && text['lang2']['flag'].length > 0) {
+			if (text.incl_flag && text['lang2']['flag'].length > 0) {
 				output += flag_for_code(text.lang2.flag)
 			}
-			if (text.lang_marker == 'superscript' && text['lang2']['code'].length > 0) {
+			if (text.incl_superscript && text['lang2']['code'].length > 0) {
 				output += superscript_for_code(text.lang2.code)
 			}
-			output += " ";
+			if ( text.incl_flag || text.incl_superscript ) {
+				output += " ";
+			}
 			if (text.incl_rfc2482_tags && text['lang2']['flag'].length > 0) {
 				output += "\u{E0001}";
 				for (let c of text['lang2']['code']) {
