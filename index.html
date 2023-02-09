@@ -4,9 +4,34 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	<link rel=stylesheet href="style.css" />
 	<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-    <script defer src="./alpinejs-3.10.0.js"></script>
     <script defer src="./alpinejs-persist-v3.10.4.min.js"></script>
+    <script defer src="./alpinejs-3.10.0.js"></script>
 	<script defer>
+		function copy_to_clipboard(text) {
+			navigator.clipboard.writeText(format_text(text));
+
+			if (text.lang1.code != "" && text.lang2.code != "") {
+				if (text.lang_history == undefined ) {
+					text.lang_history = [];
+				}
+				for (let i=0; i<text.lang_history.length; i++) {
+					text.lang_history[i][1] *= 0.9
+				}
+				let key = { lang1: text.lang1.code, flag1: text.lang1.flag, lang2: text.lang2.code, flag2: text.lang2.flag };
+				let key_json_str = JSON.stringify(key);
+				i = text.lang_history.findIndex((item) => JSON.stringify(item[0]) == key_json_str);
+				if ( i == -1 ) {
+					text.lang_history.push([key, 1]);
+				} else {
+					text.lang_history[i][1]++;
+				}
+				text.lang_history.sort((a, b) => a[1] < b[1])
+				if (text.lang_history > 10) {
+					text.lang_history.splice(10, text.lang_history.length-10);
+				}
+			}
+
+		}
 		function flag_for_code(code) {
 			if (code.length == 0) {
 				return undefined;
@@ -102,6 +127,7 @@
 	  	lang_marker: 'flag',
 		lang1: { 'code': '', 'flag': '', 'text': '' },
 		lang2: { 'code': '', 'flag': '', 'text': '' },
+		lang_history: $persist([]),
 		suffix: '',
 		incl_rfc2482_tags: true,
 		incl_superscript: false,
@@ -125,8 +151,13 @@
 	  }
 	 }">
 		<h1>MultiLang Tags</h1>
+		<div class="popular_langs">
+			<template x-for="popular in text.lang_history.slice(0, 6)">
+				<button @click="let p = popular[0]; text.lang1.code = p.lang1; text.lang1.flag =p.flag1; text.lang2.code = p.lang2; text.lang2.flag = p.flag2;" x-text="(flag_for_code(popular[0].flag1) ?? '⚐') + (superscript_for_code(popular[0].lang1) ?? 'ˣˣ') + '/' + (flag_for_code(popular[0].flag2) ?? '⚐') + (superscript_for_code(popular[0].lang2) ?? 'ˣˣ')"></button>
+			</template>
+		</div>
 		<div class="lang_input">
-			<input id=lang1_code class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 @keydown.enter="document.getElementById('lang1_flag').focus()" />
+			<input id=lang1_code class="code" type=text size=4 placeholder="Code" name=lang x-model="text.lang1.code" tabindex=1 @keydown.enter="document.getElementById('lang1_flag').focus()" />
 			<input id=lang1_flag class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang1.flag" tabindex=1 @keydown.enter="document.getElementById('lang1_text').focus()" />
 			<textarea id=lang1_text class="text" type=text placeholder="Text" name=text x-model="text.lang1.text" autocomplete=off @keydown.enter="document.getElementById('lang2_text').focus()" tabindex=2></textarea>
 		</div>
@@ -152,7 +183,7 @@
 				-->
 		</div>
 		<div class="lang_input">
-			<input id=lang2_code class="code" type=text size=2 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 @keydown.enter="document.getElementById('lang2_flag').focus()" />
+			<input id=lang2_code class="code" type=text size=4 placeholder="Code" name=lang x-model="text.lang2.code" tabindex=1 @keydown.enter="document.getElementById('lang2_flag').focus()" />
 			<input id=lang2_flag class="flag" type=text size=2 placeholder="Flag" name=lang x-model="text.lang2.flag" tabindex=1 @keydown.enter="document.getElementById('lang2_text').focus()" />
 			<textarea class="text" id=lang2_text type=text placeholder="Text" name=text x-model="text.lang2.text" autocomplete=off @keydown.enter="document.getElementById('copy_to_clipboard').click()" tabindex=2></textarea>
 		</div>
@@ -165,7 +196,8 @@
 				id="copy_to_clipboard"
 				:title="navigator.clipboard == undefined ? 'Clipboard not available.\nAre you accessing via HTTP?' : 'Copy to Clipboard'"
 				:disabled="navigator.clipboard == undefined"
-				@click="navigator.clipboard.writeText(format_text(text));">
+				@click="copy_to_clipboard(text)"
+				>
 					<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
 					   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
 					   <rect x="8" y="8" width="12" height="12" rx="2"></rect>
