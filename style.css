@@ -8,7 +8,7 @@
   font-family: comfortaa;
   src: url(Comfortaa-Regular.woff2)
 }
-html, input, button {
+html, input, button, textarea {
 	font-family: comfortaa;
 }
 

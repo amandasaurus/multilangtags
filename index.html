@@ -72,7 +72,10 @@
 			if (text.incl_superscript && text['lang1']['code'].length > 0) {
 				output += superscript_for_code(text.lang1.code)
 			}
-			if ( text.incl_flag || text.incl_superscript ) {
+			if (text.incl_superscript_short && text['lang1']['code'].length > 0) {
+				output += superscript_for_code(text.lang1.code).slice(0, 2);
+			}
+			if ( text.incl_flag || text.incl_superscript || text.incl_superscript_short ) {
 				output += " ";
 			}
 			if (text.incl_rfc2482_tags && text['lang1']['code'].length > 0) {
@@ -96,7 +99,10 @@
 			if (text.incl_superscript && text['lang2']['code'].length > 0) {
 				output += superscript_for_code(text.lang2.code)
 			}
-			if ( text.incl_flag || text.incl_superscript ) {
+			if (text.incl_superscript_short && text['lang2']['code'].length > 0) {
+				output += superscript_for_code(text.lang2.code).slice(0, 2);
+			}
+			if ( text.incl_flag || text.incl_superscript || text.incl_superscript_short ) {
 				output += " ";
 			}
 			if (text.incl_rfc2482_tags && text['lang2']['flag'].length > 0) {
@@ -131,6 +137,7 @@
 		suffix: '',
 		incl_rfc2482_tags: true,
 		incl_superscript: false,
+		incl_superscript_short: false,
 		incl_flag: true,
 		flip() {
 			var old = this.lang1;
@@ -227,6 +234,7 @@
 			<label><input type=checkbox x-model="text.incl_rfc2482_tags">  rfc2482 lang. bytes</label>
 			<label><input type=checkbox x-model="text.incl_flag" /> flag <span x-text="(flag_for_code(text.lang1.flag) ?? '⚐') + '/' + (flag_for_code(text.lang2.flag) ?? '⚐') "></span></label>
 			<label><input type=checkbox x-model="text.incl_superscript" /> superscript <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ') + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ') "></span></label>
+			<label><input type=checkbox x-model="text.incl_superscript_short" /> superscript (short) <span x-text="(superscript_for_code(text.lang1.code) ?? 'ˣˣ').slice(0, 2) + '/' + (superscript_for_code(text.lang2.code) ?? 'ˣˣ').slice(0, 2) "></span></label>
 		</div>
 	</main>
 </body>
